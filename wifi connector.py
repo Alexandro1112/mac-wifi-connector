@@ -45,13 +45,33 @@ def connect(name, SSID):
         command = "nmcli con up "+SSID
     os.system(command)
 
+        
 def displayAvailableNetworks():
     if platform.system() == "Windows":
         command = "netsh wlan show networks interface=Wi-Fi"
     elif platform.system() == "Linux":
         command = "nmcli dev wifi list"
     os.system(command)
+    if platform.system == 'Darwin':
+        
+        """ Function output all wi-fi networks,
+              which available for your devise."""
+        scan_cmd = subprocess.Popen(['airport', '-s'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                                     stdin=subprocess.PIPE)
+        scan_out, scan_err = scan_cmd.communicate()
+        scan_out_data = dict()
+        scan_out_lines = str(scan_out).split("\\n")[1:-1]
+        for each_line in scan_out_lines:
+             split_line = [i for i in each_line.split(' ') if i != '']
+             line_data = {"SSID": split_line[0], "RSSI": split_line[2], "channel": split_line[3],
+                          "HT": (split_line[4] == "Y"), "CC": split_line[5], "security": split_line[6]}
+             scan_out_data[split_line[1]] = line_data
+        names_ = scan_out_data
 
+        for names in names_.values():
+             self.networks = list(names.values())[0]
+             del networks.split()[-1]
+             print(networks.split()) if not networks.strip() == '' else None
 try:
     displayAvailableNetworks()
     option = input("New connection (y/N)? ")
